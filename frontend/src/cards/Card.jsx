@@ -20,7 +20,11 @@ const {
         src={image}
         alt="Customize option"
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        onClick={() => setSelectedImage(image)}
+        onClick={() => {
+          setSelectedImage(image)
+          setBackendImage(null)
+          setFrontendImage(null)
+        }}
       />
     </div>
   );

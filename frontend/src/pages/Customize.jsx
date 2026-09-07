@@ -10,6 +10,7 @@ import image4 from "../assets/image4.png";
 import image5 from "../assets/image5.png";
 import image6 from "../assets/image6.jpeg";
 import image7 from "../assets/image7.jpeg";
+import { useNavigate } from "react-router-dom";
 
 function Customize() {
   const {
@@ -23,6 +24,7 @@ function Customize() {
     userData,
     setUserData,
   } = useContext(UserDataContext);
+  const navigate = useNavigate()
   const inputImage = useRef();
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -73,7 +75,7 @@ function Customize() {
           onChange={handleImage}
         />
       </div>
-      {selectedImage && <button className="min-w-[150px] h-[60px] mt-[30px] text-black font-semibold bg-white rounded-full text-[19px]">
+      {selectedImage && <button className="min-w-[150px] h-[60px] mt-[30px] text-black font-semibold cursor-pointer bg-white rounded-full text-[19px]" onClick={()=>navigate("/customize2")}>
         Next{" "}
       </button>}
     </div>
