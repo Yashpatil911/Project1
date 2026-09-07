@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.routes.js";
+import geminiResponse from "./gemini.js";
 dotenv.config();
 
 const app = express();
@@ -17,6 +18,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
+
+
 
 app.listen(port, () => {
     connectDb();

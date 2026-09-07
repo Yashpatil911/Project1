@@ -11,6 +11,7 @@ import image5 from "../assets/image5.png";
 import image6 from "../assets/image6.jpeg";
 import image7 from "../assets/image7.jpeg";
 import { useNavigate } from "react-router-dom";
+import { MdKeyboardBackspace } from "react-icons/md";
 
 function Customize() {
   const {
@@ -33,6 +34,11 @@ function Customize() {
   };
   return (
     <div className="w-full h-[100vh] bg-gradient-to-t from-black to-[#030353] flex justify-center items-center flex-col p-[20px]">
+      <MdKeyboardBackspace
+        className="absolute top-[30px] left-[30px] 
+      text-white cursor-pointer w-[25px] h-[25px] "
+        onClick={() => navigate("/")}
+      />
       <div className="w-[90%] max-w-[60%] flex justify-center items-center flex-wrap">
         <h1 className="text-center text-white mb-[40px] text-[30px]">
           Select your <span className="text-blue-200">Assistant Image</span>
@@ -75,9 +81,14 @@ function Customize() {
           onChange={handleImage}
         />
       </div>
-      {selectedImage && <button className="min-w-[150px] h-[60px] mt-[30px] text-black font-semibold cursor-pointer bg-white rounded-full text-[19px]" onClick={()=>navigate("/customize2")}>
-        Next{" "}
-      </button>}
+      {selectedImage && (
+        <button
+          className="min-w-[150px] h-[60px] mt-[30px] text-black font-semibold cursor-pointer bg-white rounded-full text-[19px]"
+          onClick={() => navigate("/customize2")}
+        >
+          Next{" "}
+        </button>
+      )}
     </div>
   );
 }

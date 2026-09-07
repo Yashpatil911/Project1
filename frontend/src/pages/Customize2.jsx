@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { UserDataContext } from "../context/UserContxt";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { MdKeyboardBackspace } from "react-icons/md"
 
 function Customize2() {
   
@@ -11,8 +12,9 @@ function Customize2() {
   const [assistantName, setAssistantName] = useState(
     userData?.assistantName || "",
   );
-
+  const[loading,setLoading] = useState(false)
   const handleUpdateAssistant = async () => {
+    setLoading(true)
     try {
       let formData = new FormData();
       formData.append("assistantName", assistantName);
@@ -24,18 +26,21 @@ function Customize2() {
       const result = await axios.post(`${serverUrl}/api/user/update`,
         formData, { withCredentials: true },
       );
-
+      setLoading(false)
       console.log(result.data);
       setUserData(result.data);
-      
+      navigate("/")
       
     } catch (error) {
+      setLoading(false);
       console.log("Update Assistant error:", error.response?.data || error.message);
     }
   };
 
   return (
-    <div className="w-full h-[100vh] bg-gradient-to-t from-black to-[#030353] flex justify-center items-center flex-col p-[20px]">
+    <div className="w-full h-[100vh] bg-gradient-to-t from-black to-[#030353] flex justify-center items-center flex-col p-[20px] relative">
+      <MdKeyboardBackspace className="absolute top-[30px] left-[30px] 
+      text-white cursor-pointer w-[25px] h-[25px] " onClick={()=>navigate("/customize")}/>
       <h1 className="text-center text-white mb-[40px] text-[30px]">
         Select your <span className="text-blue-200">Assistant Name </span>{" "}
       </h1>
@@ -51,13 +56,13 @@ function Customize2() {
       {assistantName && (
         <button
           className="min-w-[300px] h-[60px] mt-[30px] text-black font-semibold cursor-pointer bg-white rounded-full text-[19px]"
+          disabled={loading}
           onClick={() => {
-           
-            handleUpdateAssistant()
+            handleUpdateAssistant();
           }}
         >
           {" "}
-          Finally Create Your Assistant{" "}
+          {!loading ? "Finally Create Your Assistant" : "Loading..."}{" "}
         </button>
       )}
     </div>
