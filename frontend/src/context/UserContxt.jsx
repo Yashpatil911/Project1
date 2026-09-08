@@ -21,6 +21,16 @@ function UserContxt({ children }) {
     }
   };
 
+  const getGeminiResponse=async (command)=>{
+    try {
+    const result=await axios.post(`${serverUr1}/api/user/
+    asktoassistant`, {command}, {withCredentials : true})
+    return result.data
+    } catch (error) {
+    console.log(error)
+    }
+  }
+
   useEffect(() => {
     handleCurrentUser();
   }, []);
@@ -35,6 +45,7 @@ function UserContxt({ children }) {
     setFrontendImage,
     selectedImage,
     setSelectedImage,
+    getGeminiResponse,
   };
   return (
     <div>
