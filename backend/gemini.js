@@ -46,6 +46,9 @@ now your userInput- ${command}
           parts: [{ text: prompt }],
         },
       ],
+      generationConfig: {
+    responseMimeType: "application/json",
+  },
     });
     return result.data.candidates[0].content.parts[0].text;
   } catch (error) {

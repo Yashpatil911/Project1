@@ -4,7 +4,7 @@ import axios from "axios";
 
 function UserContxt({ children }) {
   const serverUrl = "http://localhost:8000";
-  const [userData, setUserData] = React.useState(null);
+  const [userData, setUserData] = useState(null);
   const [frontendImage, setFrontendImage] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -23,11 +23,12 @@ function UserContxt({ children }) {
 
   const getGeminiResponse=async (command)=>{
     try {
-    const result=await axios.post(`${serverUr1}/api/user/
-    asktoassistant`, {command}, {withCredentials : true})
+    const result=await axios.post(`${serverUrl}/api/user/asktoassistant`, {command}, {withCredentials : true})
     return result.data
     } catch (error) {
-    console.log(error)
+      console.log("API error:", error.response?.data || error.message);
+      console.log(error.response?.data || error.message);
+    // console.log(error)
     }
   }
 

@@ -47,13 +47,16 @@ export const askToAssistant = async (req, res) => {
     const user = await User.findById(req.userId);
     const userName = user.name;
     const assistantName = user.assistantName;
-    const result = await geminiResponse(command, userName, assistantName);
-
-    const jsonMatch = result.match(/{[\s\s]*}/);
-    if (!jsonMatch) {
-      return res.ststus(400).json({ response: "sorry, i can't understand" });
-    }
-    const gemResult = JSON.parse(jsonMatch[0]);
+    const result = await geminiResponse(command,assistantName,userName);
+     console.log(typeof result);
+    console.log("Gemini result:", result);
+    // const jsonMatch = result.match(/{[\s\s]*}/);
+   
+    // if (!jsonMatch) {
+    //   return res.status(400).json({ response: "sorry, i can't understand" });
+    // }
+    const gemResult = JSON.parse(result);
+   
     const type = gemResult.type;
 
     switch (type) {
@@ -102,6 +105,6 @@ export const askToAssistant = async (req, res) => {
         return res.status(400).json({ response: "I didn't understand that command." });
     }
   } catch (error) {
-            return res.status(500).json({ response: "ask assistant error" });
+            return res.status(500).json({ response: "ask assistant error",error });
   }
 };
