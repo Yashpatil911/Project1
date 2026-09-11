@@ -222,6 +222,8 @@ return ()=>{
         {!aiText && <img src={userImg} alt="" className="w-[200px]" />}
         {aiText && <img src={aiImg} alt="" className="w-[200px]" />}
       
+        <h1 className="text-white">{userText?userText:aiText?aiText:""}</h1>
+
     </div>
   );
 }
