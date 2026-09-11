@@ -19,6 +19,47 @@ function Home() {
       console.log(error);
     }
   };
+
+  const speak=(text)=>{
+    const utterence=new SpeechSynthesisUtterance(text)
+    window.speechSynthesis.speak(utterence)
+  }
+
+const handleCommand = (data) => {
+  const { type, userInput, response } = data;
+  speak(response);
+
+  if (type === 'google-search') {
+    const query = encodeURIComponent(userInput);
+    window.open(`https://www.google.com/search?q=${query}`, '_blank');
+  }
+
+  if (type === 'calculator-open') {
+    window.open('https://www.google.com/search?q=calculator', '_blank');
+  }
+
+  if (type === "instagram-open") {
+  window.open("https://www.instagram.com/", "_blank");
+}
+
+if (type === "facebook-open") {
+  window.open("https://www.facebook.com/", "_blank");
+}
+
+if (type === "weather-show") {
+  window.open("https://www.google.com/search?q=weather", "_blank");
+}
+
+if (type === "youtube-search" || type === "youtube_play") {
+  const query = encodeURIComponent(userInput);
+  window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
+}
+
+};
+
+
+
+
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition
@@ -32,8 +73,9 @@ function Home() {
 
         if(transcript. toLowerCase().includes(userData.assistantName.toLowerCase() ) ){
         const data=await getGeminiResponse(transcript)
-        console.log("API returned:", data);
         console.log(data)
+        // speak(data.response)
+        handleCommand(data)
       }
 
     }
