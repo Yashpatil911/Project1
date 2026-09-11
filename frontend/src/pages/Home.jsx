@@ -2,11 +2,14 @@ import React, { useContext,useEffect,useState, useRef } from "react";
 import { UserDataContext } from "../context/UserContxt";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import aiImg from "../assets/ai.gif";
+import userImg from "../assets/user.gif";
 function Home() {
   const { userData, serverUrl, setUserData,getGeminiResponse } = useContext(UserDataContext);
   const navigate = useNavigate();
   const [listening, setListening]=useState(false)
+  const [userText, setUserText]=useState("")
+  const [aiText, setAiText]=useState("")
   const isSpeakingRef=useRef(false)
   const recognitionRef=useRef(null)
   const synth = window.speechSynthesis
@@ -39,9 +42,15 @@ const startRecognition = () => {
 
   const speak=(text)=>{
     const utterence=new SpeechSynthesisUtterance(text)
-
+    utterence.lang = 'hi-IN';
+    const voices =window. speechSynthesis.getVoices()
+    const hindiVoice = voices. find(v => v.lang === 'hi-IN');
+    if (hindiVoice){
+    utterence.voice = hindiVoice;
+    }
     isSpeakingRef.current=true
     utterence.onend=()=>{
+      setAiText("")
       isSpeakingRef.current=false
       startRecognition()
     }
@@ -156,12 +165,15 @@ if (type === "youtube-search" || type === "youtube_play") {
 
       if(transcript. toLowerCase() . includes(userData. assistantName.
       toLowerCase())){
-
+        setAiText("")
+        setUserText(transcript)
         recognition.stop()
         isRecognizingRef.current=false
         setListening(false)
-      const data=await getGeminiResponse(transcript)
+       const data=await getGeminiResponse(transcript)
       handleCommand (data)
+      setAiText(data.response)
+      setUserText("")
 }
     }
 
@@ -207,6 +219,9 @@ return ()=>{
       <h1 className="text-white text-[18px] font-semibold">
         I'm {userData?.assistantName}
       </h1>
+        {!aiText && <img src={userImg} alt="" className="w-[200px]" />}
+        {aiText && <img src={aiImg} alt="" className="w-[200px]" />}
+      
     </div>
   );
 }
