@@ -1,4 +1,4 @@
-import React, { useContext,useEffect } from "react";
+import React, { useContext,useEffect,useState, useRef } from "react";
 import { UserDataContext } from "../context/UserContxt";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,10 @@ import axios from "axios";
 function Home() {
   const { userData, serverUrl, setUserData,getGeminiResponse } = useContext(UserDataContext);
   const navigate = useNavigate();
+  const [listening, setListening]=useState(false)
+  const isSpeakingRef=useRef(false)
+  const recognitionRef=useRef(null)
+  const synth = window.speechSynthesis
 
   const handleLogOut = async () => {
     try {
@@ -20,9 +24,28 @@ function Home() {
     }
   };
 
+const startRecognition = () => {
+    try{
+      recognitionRef.current?.start();
+      setListening(true);
+    }
+    catch (error) {
+      if (!error.message. includes("start")) {
+      console.error("Recognition error:", error);
+      }
+   }
+
+ };
+
   const speak=(text)=>{
     const utterence=new SpeechSynthesisUtterance(text)
-    window.speechSynthesis.speak(utterence)
+
+    isSpeakingRef.current=true
+    utterence.onend=()=>{
+      isSpeakingRef.current=false
+      startRecognition()
+    }
+    synth.speak(utterence)
   }
 
 const handleCommand = (data) => {
@@ -63,9 +86,27 @@ if (type === "youtube-search" || type === "youtube_play") {
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition
+
       const recognition=new SpeechRecognition()
       recognition.continuous=true,
       recognition.lang='en-US'
+
+      recognitionRef.current=recognition
+      const isRecognizingRef={current:false}
+
+      const safeRecognition=()=>{
+      if(!isSpeakingRef.current && ! isRecognizingRef.current){
+      try {
+
+          recognition.start();
+          console.log("Recognition requested to start");
+          } catch (err) {
+          if (err.name !== "InvalidStateError") {
+          console.error("Start error:", err);
+          }
+        }
+      }
+      }
 
       recognition.onresult=async (e)=>{
        const transcript=e.results[e.results.length-1][0].transcript.trim()
@@ -79,10 +120,66 @@ if (type === "youtube-search" || type === "youtube_play") {
       }
 
     }
-recognition.start()
+
+      recognition.onstart = () => {
+      console.log("Recognition started");
+      isRecognizingRef.current = true;
+      setListening(true);
+      }
+      recognition.onend = () => {
+      console.log("Recognition ended");
+      isRecognizingRef.current = false;
+      setListening(false);
+
+      if (!isSpeakingRef.current) {
+          setTimeout(() => {
+          safeRecognition()
+          }, 1000); // delay avoids rapid loop
+      }
+    }
+
+    recognition.onerror = (event) => {
+      console.warn("Recognition error:", event.error);
+      isRecognizingRef.current = false;
+      setListening(false);
+      if (event.error !== "aborted" && !isSpeakingRef. current) {
+      setTimeout(() => {
+      safeRecognition();
+       }, 1000);
+      }
+    }
+
+
+    recognition.onresult=async (e)=>{
+      const transcript=e. results[e.results . length-1][0]. transcript.trim()
+      console. log("heard : " + transcript)
+
+      if(transcript. toLowerCase() . includes(userData. assistantName.
+      toLowerCase())){
+
+        recognition.stop()
+        isRecognizingRef.current=false
+        setListening(false)
+      const data=await getGeminiResponse(transcript)
+      handleCommand (data)
+}
+    }
+
+    const fallback=setInterval(()=>{
+    if(!isSpeakingRef.current && !isRecognizingRef.current){
+    safeRecognition()
+}
+    },10000)
+safeRecognition()
+return ()=>{
+  recognition.stop()
+  setListening(false)
+  isRecognizingRef.current=false
+  clearInterval(fallback)
+}
+
 
 },[]);
-
   return (
     <div className="w-full h-[100vh] bg-gradient-to-t from-black to-[#02023d] flex justify-center items-center flex-col gap-[15px]">
       <button
